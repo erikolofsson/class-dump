@@ -10,6 +10,7 @@
 #import "CDTypeLexer.h"
 #import "CDTypeParser.h"
 #import "CDTypeController.h"
+#import "CDTypeName.h"
 
 static BOOL debug = NO;
 
@@ -84,7 +85,12 @@ static BOOL debug = NO;
     return nil;
 }
 
-- (NSString *)formatVariable:(NSString *)name type:(CDType *)type;
+- (NSString *)formatVariable:(NSString *)name type:(CDType *)type
+{
+    return [self formatVariable: name type:type typeName:nil isTemplate:nil];
+}
+
+- (NSString *)formatVariable:(NSString *)name type:(CDType *)type typeName:(NSMutableString *)typeName isTemplate:(BOOL *)isTemplate;
 {
     NSMutableString *resultString = [NSMutableString string];
 
@@ -97,6 +103,11 @@ static BOOL debug = NO;
         type.variableName = name;
         [type phase0RecursivelyFixStructureNames:NO]; // Nuke the $_ names
         [type phase3MergeWithTypeController:self.typeController];
+        
+        if (typeName)
+            [typeName setString:type.typeName.name];
+        if (isTemplate)
+            *isTemplate = type.isTemplateType;
         [resultString appendString:[type formattedString:nil formatter:self level:0]];
     }
 
@@ -273,6 +284,16 @@ static BOOL debug = NO;
 }
 
 - (void)formattingDidReferenceProtocolNames:(NSArray *)names;
+{
+    [self.typeController typeFormatter:self didReferenceProtocolNames:names];
+}
+
+- (void)typeController:(CDTypeController *)typeController didReferenceClassName:(NSString *)name
+{
+    [self.typeController typeFormatter:self didReferenceClassName:name];
+}
+
+- (void)typeController:(CDTypeController *)typeController didReferenceProtocolNames:(NSArray *)names
 {
     [self.typeController typeFormatter:self didReferenceProtocolNames:names];
 }

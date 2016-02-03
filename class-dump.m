@@ -32,6 +32,7 @@ void print_usage(void)
             "        --arch <arch>  choose a specific architecture from a universal binary (ppc, ppc64, i386, x86_64, armv6, armv7, armv7s, arm64)\n"
             "        -C <regex>     only display classes matching regular expression\n"
             "        -f <str>       find string in method name\n"
+            "        -F             flat includes, just use \"\" includes for frameworks\n"
             "        -H             generate header files in current directory, or directory specified with -o\n"
             "        -I             sort classes, categories, and protocols by inheritance (overrides -s)\n"
             "        -o <dir>       output directory used for -H\n"
@@ -78,6 +79,7 @@ int main(int argc, char *argv[])
             { "show-imp-addr",           no_argument,       NULL, 'A' },
             { "match",                   required_argument, NULL, 'C' },
             { "find",                    required_argument, NULL, 'f' },
+            { "flat",                    no_argument,       NULL, 'F' },
             { "generate-multiple-files", no_argument,       NULL, 'H' },
             { "sort-by-inheritance",     no_argument,       NULL, 'I' },
             { "output-dir",              required_argument, NULL, 'o' },
@@ -102,7 +104,7 @@ int main(int argc, char *argv[])
 
         CDClassDump *classDump = [[CDClassDump alloc] init];
 
-        while ( (ch = getopt_long(argc, argv, "aAC:f:HIo:rRsSt", longopts, NULL)) != -1) {
+        while ( (ch = getopt_long(argc, argv, "aAC:f:FHIo:rRsSt", longopts, NULL)) != -1) {
             switch (ch) {
                 case CD_OPT_ARCH: {
                     NSString *name = [NSString stringWithUTF8String:optarg];
@@ -197,6 +199,11 @@ int main(int argc, char *argv[])
                     
                 case 'f': {
                     searchString = [NSString stringWithUTF8String:optarg];
+                    break;
+                }
+                    
+                case 'F': {
+                    classDump.shouldGenerateFlatIncludes = YES;
                     break;
                 }
                     

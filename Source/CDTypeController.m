@@ -152,11 +152,17 @@ static BOOL debug = NO;
     }
     
     if (self.hasUnknownFunctionPointers) {
-        [resultString appendFormat:@"typedef void (*CDUnknownFunctionPointerType)(void); // return type and parameters are unknown\n\n"];
+        [resultString appendFormat:@"#ifndef classdump_CDUnknownFunctionPointerType\n"];
+        [resultString appendFormat:@"   #define classdump_CDUnknownFunctionPointerType\n"];
+        [resultString appendFormat:@"   typedef void (*CDUnknownFunctionPointerType)(void); // return type and parameters are unknown\n"];
+        [resultString appendFormat:@"#endif\n\n"];
     }
     
     if (self.hasUnknownBlocks) {
-        [resultString appendFormat:@"typedef void (^CDUnknownBlockType)(void); // return type and parameters are unknown\n\n"];
+        [resultString appendFormat:@"#ifndef classdump_CDUnknownBlockType\n"];
+        [resultString appendFormat:@"   #define classdump_CDUnknownBlockType\n"];
+        [resultString appendFormat:@"   typedef void (^CDUnknownBlockType)(void); // return type and parameters are unknown\n"];
+        [resultString appendFormat:@"#endif\n\n"];
     }
     
     [self.structureTable appendNamedStructuresToString:resultString formatter:self.structDeclarationTypeFormatter markName:@"Named Structures"];

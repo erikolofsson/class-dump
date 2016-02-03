@@ -437,19 +437,17 @@ static BOOL debugMerge = NO;
                 result = @"CDUnknownFunctionPointerType";
             else
                 result = [NSString stringWithFormat:@"CDUnknownFunctionPointerType %@", currentName];
-            result = [NSString stringWithFormat:@"void * /* %@ */", result];
 
             break;
             
         case T_BLOCK_TYPE:
             if (self.types) {
-                result = [self blockSignatureString];
+                result = [self blockSignatureString: typeFormatter];
             } else {
                 if (currentName == nil)
                     result = @"CDUnknownBlockType";
                 else
                     result = [NSString stringWithFormat:@"CDUnknownBlockType %@", currentName];
-                result = [NSString stringWithFormat:@"id /* %@ */", result];
             }
             break;
             
@@ -855,13 +853,14 @@ static BOOL debugMerge = NO;
     [_subtype generateMemberNames];
 }
 
-- (NSString *)blockSignatureString;
+- (NSString *)blockSignatureString: (CDTypeFormatter *)typeFormatter;
 {
     NSMutableString *blockSignatureString = [[NSMutableString alloc] init];
     CDTypeFormatter *blockSignatureTypeFormatter = [[CDTypeFormatter alloc] init];
     blockSignatureTypeFormatter.shouldExpand = NO;
     blockSignatureTypeFormatter.shouldAutoExpand = NO;
     blockSignatureTypeFormatter.baseLevel = 0;
+    blockSignatureTypeFormatter.typeController.delegate = typeFormatter;
     [self.types enumerateObjectsUsingBlock:^(CDType *type, NSUInteger idx, BOOL *stop) {
         if (idx != 1)
             [blockSignatureString appendString:[blockSignatureTypeFormatter formatVariable:nil type:type]];

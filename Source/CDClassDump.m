@@ -39,6 +39,7 @@ NSString *CDErrorKey_Exception    = @"CDErrorKey_Exception";
     BOOL _shouldShowIvarOffsets;
     BOOL _shouldShowMethodAddresses;
     BOOL _shouldShowHeader;
+    BOOL _shouldGenerateFlatIncludes;
     
     NSRegularExpression *_regularExpression;
     
@@ -69,6 +70,7 @@ NSString *CDErrorKey_Exception    = @"CDErrorKey_Exception";
         _targetArch.cpusubtype = 0;
         
         _shouldShowHeader = YES;
+        _shouldGenerateFlatIncludes = NO;
     }
 
     return self;

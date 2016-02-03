@@ -29,6 +29,8 @@
 @property (assign) BOOL shouldShowIvarOffsets;
 @property (assign) BOOL shouldShowMethodAddresses;
 @property (assign) BOOL shouldShowHeader;
+@property (assign) BOOL shouldGenerateFlatIncludes;
+
 
 @property (strong) NSRegularExpression *regularExpression;
 - (BOOL)shouldShowName:(NSString *)name;

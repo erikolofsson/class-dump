@@ -129,7 +129,8 @@ static BOOL debug = NO;
         //NSLog(@"No property for method: %@", method.name);
         // C++ destructors can't be called and this header can't be compiled with one declared. So let's comment it out.
         // Leave it there so the user knows that the class has a C++ implementation though.
-        if ([method.name isEqualToString:@".cxx_destruct"]) {
+        
+        if ([method.name isEqualToString:@".cxx_destruct"] || [method.name isEqualToString:@".cxx_construct"]) {
             [self.resultString appendString:@"// "];
         }
 
@@ -225,12 +226,16 @@ static BOOL debug = NO;
 
 - (void)_visitProperty:(CDOCProperty *)property parsedType:(CDType *)parsedType attributes:(NSArray *)attrs;
 {
+    if ([property.name isEqualToString:@"hash"])
+        return; // Reserved in NSObject
+        
     NSString *backingVar = nil;
     BOOL isWeak = NO;
     BOOL isDynamic = NO;
     
     NSMutableArray *alist = [[NSMutableArray alloc] init];
     NSMutableArray *unknownAttrs = [[NSMutableArray alloc] init];
+    
     
     // objc_v2_encode_prop_attr() in gcc/objc/objc-act.c
     

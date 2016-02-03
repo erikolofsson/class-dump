@@ -672,6 +672,32 @@ static BOOL debugAnonStructures = NO;
 // TODO: (2003-12-23) sort by name or by dependency
 // TODO: (2003-12-23) declare in modules where they were first used
 
+static BOOL isDefaultType(NSString *type)
+{
+    if ([type compare: @"CATransform3D"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"CGPoint"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"CGRect"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"CGSize"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"_NSRange"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"_NSRange"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"NSView"] == NSOrderedSame)
+        return true;
+    if ([type compare: @"NSEdgeInsets"] == NSOrderedSame)
+        return true;
+    
+    
+    if ([type compare: @"_opaque_pthread_t"] == NSOrderedSame)
+        return true;
+    
+    return false;
+}
+
 - (void)appendNamedStructuresToString:(NSMutableString *)resultString
                             formatter:(CDTypeFormatter *)typeFormatter
                              markName:(NSString *)markName;
@@ -694,10 +720,16 @@ static BOOL debugAnonStructures = NO;
                     [resultString appendFormat:@"// would normally show? %u\n", shouldShow];
                     [resultString appendFormat:@"// depth: %lu, ref count: %lu, used in method? %u\n", info.type.structureDepth, info.referenceCount, info.isUsedInMethod];
                 }
-                NSString *formattedString = [typeFormatter formatVariable:nil type:type];
-                if (formattedString != nil) {
+                NSMutableString *typeName = [[NSMutableString alloc] init];
+                BOOL isTemplate = NO;
+                NSString *formattedString = [typeFormatter formatVariable:nil type:type typeName: typeName isTemplate: &isTemplate];
+                
+                if (formattedString != nil && !isDefaultType(typeName) && !isTemplate) {
+                    [resultString appendFormat:@"#ifndef classdump_%@\n", typeName]; 
+                    [resultString appendFormat:@"#define classdump_%@\n", typeName]; 
                     [resultString appendString:formattedString];
-                    [resultString appendString:@";\n\n"];
+                    [resultString appendString:@";\n"];
+                    [resultString appendString:@"#endif\n\n"];
                 }
             }
         }
@@ -762,9 +794,15 @@ static BOOL debugAnonStructures = NO;
                 [resultString appendFormat:@"// depth: %lu, ref: %lu, used in method? %u\n", info.type.structureDepth, info.referenceCount, info.isUsedInMethod];
             }
 
-            NSString *formattedString = [typeFormatter formatVariable:nil type:info.type];
+            NSMutableString *typeName = [[NSMutableString alloc] init];
+            BOOL isTemplate = NO;
+            NSString *formattedString = [typeFormatter formatVariable:nil type:info.type typeName: typeName isTemplate: &isTemplate];
+            
             if (formattedString != nil) {
+                [resultString appendFormat:@"#ifndef classdump_%@\n", info.typedefName]; 
+                [resultString appendFormat:@"#define classdump_%@\n", info.typedefName]; 
                 [resultString appendFormat:@"typedef %@ %@;\n\n", formattedString, info.typedefName];
+                [resultString appendString:@"#endif\n\n"];
             }
         }
     }
