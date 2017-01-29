@@ -258,6 +258,16 @@ static BOOL isNSType(NSString *name)
         return YES;
     if ([name hasPrefix:@"NSTableView"])
         return YES;
+    if ([name hasPrefix:@"NSTouchBarDelegate"])
+        return YES;
+    if ([name hasPrefix:@"NSTouchBarProvider"])
+        return YES;
+    if ([name hasPrefix:@"NSRulerView"])
+        return YES;
+    if ([name hasPrefix:@"NSArray"])
+        return YES;
+    if ([name hasPrefix:@"NSMutableCopying"])
+        return YES;
 
     return NO;
 }

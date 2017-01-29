@@ -21,6 +21,12 @@
 #import "CDProtocolUniquer.h"
 #import "CDOCClassReference.h"
 
+#ifdef DEBUG
+#define NSLog(FORMAT, ...) fprintf(stderr,"%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+#else
+//#define NSLog(...) {}
+#endif
+
 @implementation CDObjectiveC2Processor
 {
 }
@@ -208,7 +214,7 @@
     if (class)
         return class;
     
-    //NSLog(@"%s, address=%016lx", __cmd, address);
+    //NSLog(@"%s, address=%016llx", __cmd, address);
     
     CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithFile:self.machOFile address:address];
     NSParameterAssert([cursor offset] != 0);
@@ -226,9 +232,9 @@
     objc2Class.reserved1  = [cursor readPtr];
     objc2Class.reserved2  = [cursor readPtr];
     objc2Class.reserved3  = [cursor readPtr];
-    //NSLog(@"%016lx %016lx %016lx %016lx", objc2Class.isa, objc2Class.superclass, objc2Class.cache, objc2Class.vtable);
-    //NSLog(@"%016lx %016lx %016lx %016lx", objc2Class.data, objc2Class.reserved1, objc2Class.reserved2, objc2Class.reserved3);
-    
+    //NSLog(@"objc2Class.isa %016llx objc2Class.superclass %016llx objc2Class.cache %016llx objc2Class.vtable %016llx", objc2Class.isa, objc2Class.superclass, objc2Class.cache, objc2Class.vtable);
+    //NSLog(@"objc2Class.data %016llx objc2Class.reserved1 %016llx objc2Class.reserved2 %016llx objc2Class.reserved3 %016llx", objc2Class.data, objc2Class.reserved1, objc2Class.reserved2, objc2Class.reserved3);
+
     NSParameterAssert(objc2Class.data != 0);
     [cursor setAddress:objc2Class.data];
 
@@ -249,10 +255,18 @@
     objc2ClassData.weakIvarLayout = [cursor readPtr];
     objc2ClassData.baseProperties = [cursor readPtr];
     
-    //NSLog(@"%08x %08x %08x %08x", objc2ClassData.flags, objc2ClassData.instanceStart, objc2ClassData.instanceSize, objc2ClassData.reserved);
+    //NSLog(@"objc2ClassData.flags %08x objc2ClassData.instanceStart %08x objc2ClassData.instanceSize %08x objc2ClassData.reserved %08x", objc2ClassData.flags, objc2ClassData.instanceStart, objc2ClassData.instanceSize, objc2ClassData.reserved);
     
-    //NSLog(@"%016lx %016lx %016lx %016lx", objc2ClassData.ivarLayout, objc2ClassData.name, objc2ClassData.baseMethods, objc2ClassData.baseProtocols);
-    //NSLog(@"%016lx %016lx %016lx %016lx", objc2ClassData.ivars, objc2ClassData.weakIvarLayout, objc2ClassData.baseProperties);
+    //NSLog(@"objc2ClassData.ivarLayout %016llx objc2ClassData.name %016llx objc2ClassData.baseMethods %016llx objc2ClassData.baseProtocols %016llx", objc2ClassData.ivarLayout, objc2ClassData.name, objc2ClassData.baseMethods, objc2ClassData.baseProtocols);
+    //NSLog(@"objc2ClassData.ivars %016llx objc2ClassData.weakIvarLayout %016llx objc2ClassData.baseProperties %016llx", objc2ClassData.ivars, objc2ClassData.weakIvarLayout, objc2ClassData.baseProperties);
+        
+    if (objc2ClassData.instanceSize == 0 || objc2ClassData.instanceSize == 1)
+    {
+        CDOCClass *aClass = [[CDOCClass alloc] init];
+        [aClass setName:[NSString stringWithFormat:@"UnknownClass_%016llx", address]];
+        NSLog(@"failed = %016llx - %@", address, [self.machOFile tryStringAtAddress:objc2ClassData.name]);
+        return aClass;
+    }
     NSString *str = [self.machOFile stringAtAddress:objc2ClassData.name];
     //NSLog(@"name = %@", str);
     

@@ -322,6 +322,37 @@ static NSString *CDMachOFileMagicNumberDescription(uint32_t magic)
     NSLog(@"Warning: %@", warning);
 }
 
+- (NSString *)tryStringAtAddress:(NSUInteger)address;
+{
+    const void *ptr;
+    
+    if (address == 0)
+        return nil;
+    
+    CDLCSegment *segment = [self segmentContainingAddress:address];
+    if (segment == nil) {
+        return nil;
+    }
+    
+    if ([segment isProtected]) {
+        NSData *d2 = [segment decryptedData];
+        NSUInteger d2Offset = [segment segmentOffsetForAddress:address];
+        if (d2Offset == 0)
+            return nil;
+        
+        ptr = (uint8_t *)[d2 bytes] + d2Offset;
+        return [[NSString alloc] initWithBytes:ptr length:strlen(ptr) encoding:NSASCIIStringEncoding];
+    }
+    
+    NSUInteger offset = [self dataOffsetForAddress:address];
+    if (offset == 0)
+        return nil;
+    
+    ptr = (uint8_t *)[self.data bytes] + offset;
+    
+    return [[NSString alloc] initWithBytes:ptr length:strlen(ptr) encoding:NSASCIIStringEncoding];
+}
+
 - (NSString *)stringAtAddress:(NSUInteger)address;
 {
     const void *ptr;
