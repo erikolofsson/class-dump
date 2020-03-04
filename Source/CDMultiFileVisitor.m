@@ -43,7 +43,7 @@
 @implementation CDMultiFileVisitor
 {
     NSString *_outputPath;
-    
+
     NSDictionary *_frameworkNamesByClassName;
     NSMutableSet *_referencedClassNames;
     NSMutableSet *_referencedProtocolNames;
@@ -57,7 +57,7 @@
         _referencedProtocolNames = [[NSMutableSet alloc] init];
         _weaklyReferencedProtocolNames = [[NSMutableSet alloc] init];
     }
-    
+
     return self;
 }
 
@@ -97,7 +97,7 @@
 
     // And then generate the regular output
     [super willVisitClass:aClass];
-    
+
     [self addReferencesToProtocolNamesInArray:aClass.protocolNames];
 }
 
@@ -206,12 +206,12 @@
 - (NSString *)frameworkForClassName:(NSString *)name;
 {
     NSString *framework = self.frameworkNamesByClassName[name];
-    
+
     // Map public CoreFoundation classes to Foundation, because that is where the headers are exposed
     if ([framework isEqualToString:@"CoreFoundation"] && [name hasPrefix:@"NS"]) {
         framework = @"Foundation";
     }
-    
+
     return framework;
 }
 
@@ -222,51 +222,9 @@
 
 static BOOL isNSType(NSString *name)
 {
-    if ([name hasPrefix:@"NSObject"])
+    if ([name hasPrefix:@"NS"])
         return YES;
-    if ([name hasPrefix:@"NSDocument"])
-        return YES;
-    if ([name hasPrefix:@"NSTextView"])
-        return YES;
-    if ([name hasPrefix:@"NSLayoutManager"])
-        return YES;
-    if ([name hasPrefix:@"NSAnimation"])
-        return YES;
-    if ([name hasPrefix:@"NSTextStorage"])
-        return YES;
-    if ([name hasPrefix:@"NSCopying"])
-        return YES;
-    if ([name hasPrefix:@"NSViewController"])
-        return YES;
-    if ([name hasPrefix:@"NSFastEnumeration"])
-        return YES;
-    if ([name hasPrefix:@"NSSecureCoding"])
-        return YES;
-    if ([name hasPrefix:@"NSMenu"])
-        return YES;
-    if ([name hasPrefix:@"NSPopover"])
-        return YES;
-    if ([name hasPrefix:@"NSTextField"])
-        return YES;
-    if ([name hasPrefix:@"NSOutlineView"])
-        return YES;
-    if ([name hasPrefix:@"NSView"])
-        return YES;
-    if ([name hasPrefix:@"NSWindow"])
-        return YES;
-    if ([name hasPrefix:@"NSWindowController"])
-        return YES;
-    if ([name hasPrefix:@"NSTableView"])
-        return YES;
-    if ([name hasPrefix:@"NSTouchBarDelegate"])
-        return YES;
-    if ([name hasPrefix:@"NSTouchBarProvider"])
-        return YES;
-    if ([name hasPrefix:@"NSRulerView"])
-        return YES;
-    if ([name hasPrefix:@"NSArray"])
-        return YES;
-    if ([name hasPrefix:@"NSMutableCopying"])
+    if ([name hasPrefix:@"CALayer"])
         return YES;
 
     return NO;
@@ -283,7 +241,7 @@ static BOOL isNSType(NSString *name)
         else
             return [NSString stringWithFormat:@"#import <%@/%@.h>\n", framework, name];
     }
-    
+
     return nil;
 }
 
@@ -299,7 +257,7 @@ static BOOL isNSType(NSString *name)
         else
             return [NSString stringWithFormat:@"#import <%@/%@>\n", framework, headerName];
     }
-    
+
     return nil;
 }
 
@@ -354,7 +312,7 @@ static BOOL isNSType(NSString *name)
 {
     if (self.outputPath != nil) {
         BOOL isDirectory;
-        
+
         NSFileManager *fileManager = [NSFileManager defaultManager];
         if ([fileManager fileExistsAtPath:self.outputPath isDirectory:&isDirectory] == NO) {
             NSError *error = nil;
@@ -389,7 +347,7 @@ static BOOL isNSType(NSString *name)
 
         [referenceString appendString:@"\n"];
     }
-    
+
     BOOL addNewline = NO;
     if ([self.referencedClassNames count] > 0) {
         [referenceString appendFormat:@"@class %@;\n", [self.referencedClassNamesSortedByName componentsJoinedByString:@", "]];
@@ -400,13 +358,13 @@ static BOOL isNSType(NSString *name)
         [referenceString appendFormat:@"@protocol %@;\n", [self.weaklyReferencedProtocolNamesSortedByName componentsJoinedByString:@", "]];
         addNewline = YES;
     }
-    
+
     if (addNewline)
         [referenceString appendString:@"\n"];
-    
+
     if ([referenceString length] == 0)
         return nil;
-    
+
     return [referenceString copy];
 }
 
@@ -416,7 +374,7 @@ static BOOL isNSType(NSString *name)
 {
     CDClassFrameworkVisitor *visitor = [[CDClassFrameworkVisitor alloc] init];
     visitor.classDump = self.classDump;
-    
+
     [self.classDump recursivelyVisit:visitor];
     self.frameworkNamesByClassName = visitor.frameworkNamesByClassName;
     self.frameworkNamesByProtocolName = visitor.frameworkNamesByProtocolName;
@@ -429,51 +387,51 @@ static BOOL isNSType(NSString *name)
         NSString *filename = @"CDStructures.h";
         if (self.outputPath != nil)
             filename = [self.outputPath stringByAppendingPathComponent:filename];
-        
+
         NSFileManager *fileManager = [NSFileManager defaultManager];
 
         if ([fileManager fileExistsAtPath: filename])
         {
-            [self.resultString setString: [[NSMutableString alloc]initWithData:[NSData dataWithContentsOfFile: filename] 
+            [self.resultString setString: [[NSMutableString alloc]initWithData:[NSData dataWithContentsOfFile: filename]
                                                            encoding:NSUTF8StringEncoding]];
         }
         else
         {
             [self.resultString setString:@""];
-            
+
             [self.classDump appendHeaderToString:self.resultString];
             [self.resultString appendString:@"#pragma once\n\n"];
         }
-        
+
         [self removeAllClassNameProtocolNameReferences];
         self.referenceLocation = [self.resultString length];
-        
+
         [[self.classDump typeController] appendStructuresToString:self.resultString];
-        
+
         NSString *referenceString = [self referenceString];
         if (referenceString != nil)
             [self.resultString insertString:referenceString atIndex:self.referenceLocation];
-        
+
         [[self.resultString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:filename atomically:YES];
     }
     else
     {
         [self.resultString setString:@""];
         [self.classDump appendHeaderToString:self.resultString];
-        
+
         [self removeAllClassNameProtocolNameReferences];
         self.referenceLocation = [self.resultString length];
-        
+
         [[self.classDump typeController] appendStructuresToString:self.resultString];
-        
+
         NSString *referenceString = [self referenceString];
         if (referenceString != nil)
             [self.resultString insertString:referenceString atIndex:self.referenceLocation];
-        
+
         NSString *filename = @"CDStructures.h";
         if (self.outputPath != nil)
             filename = [self.outputPath stringByAppendingPathComponent:filename];
-        
+
         [[self.resultString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:filename atomically:YES];
     }
 }
