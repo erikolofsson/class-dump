@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Bucket
+   uuid = "1809868E-93F5-4B17-84F1-6F0D17741218"
    type = "1"
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "4EA73229-AA93-485C-A8F9-E46085FAA681"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/CDMachOFile.m"
-            timestampString = "507409388.042808"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "362"
-            endingLineNumber = "362"
+            startingLineNumber = "365"
+            endingLineNumber = "365"
             landmarkName = "-stringAtAddress:"
             landmarkType = "7">
          </BreakpointContent>
@@ -22,16 +23,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "5D7F68EC-BCF1-4001-81C2-0BAF21962156"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Source/CDMachOFile.m"
-            timestampString = "507409388.042808"
+            filePath = "Source/CDObjectiveC2Processor.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "393"
-            endingLineNumber = "393"
-            landmarkName = "-dataOffsetForAddress:"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
+            landmarkName = "-loadClasses"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

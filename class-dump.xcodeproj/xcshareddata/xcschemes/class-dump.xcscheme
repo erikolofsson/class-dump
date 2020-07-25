@@ -29,20 +29,9 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "01EB825E13A590D9003EDE60"
-            BuildableName = "class-dump"
-            BlueprintName = "class-dump"
-            ReferencedContainer = "container:class-dump.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -63,16 +52,22 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-H -F --sdk-mac &quot;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk&quot; -o &quot;/Source/Xcode-4-Fixins/Shared Code/XcodeDump&quot;"
+            argument = " -H -F --sdk-mac &quot;&quot;  -o &quot;/opt/Source/MalterlibXcodePatches/Plugins/Shared Code/XcodeDump&quot; &quot;/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/DVTKit&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-H -F --sdk-mac &quot;&quot; -o &quot;/opt/Source/MalterlibXcodePatches/Plugins/Shared Code/XcodeDump&quot; &quot;/Users/erik/Library/Developer/Xcode/macOS DeviceSupport/10.16/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--arch x86_64 -H -F --sdk-mac &quot;&quot; -o &quot;/opt/Source/MalterlibXcodePatches/Plugins/Shared Code/XcodeDump&quot; &quot;/Applications/Xcode.app/Contents/Frameworks/IDEKit.framework/Versions/A/IDEKit&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Applications/Xcode.app/Contents/SharedFrameworks/DVTMarkup.framework/Versions/A/DVTMarkup"
-            isEnabled = "YES">
+            argument = "--arch x86_64"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

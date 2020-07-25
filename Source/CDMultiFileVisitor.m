@@ -152,6 +152,10 @@
         [self.resultString insertString:referenceString atIndex:self.referenceLocation];
 
     NSString *filename = [NSString stringWithFormat:@"%@-%@.h", category.className, category.name];
+    if ([filename isEqualToString:@"(null)-IDEKit.h"]){
+        int x=0;
+        ++x;
+    }
     if (self.outputPath != nil)
         filename = [self.outputPath stringByAppendingPathComponent:filename];
 

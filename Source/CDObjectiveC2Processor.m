@@ -37,19 +37,42 @@
     
     CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithSection:section];
     while ([cursor isAtEnd] == NO)
-        [self protocolAtAddress:[cursor readPtr]];
+        {
+            CDOCProtocol *pProto = [self protocolAtAddress:[cursor readPtr]];
+            //NSLog(@"Protocol: %@", pProto.name);
+        }
 }
 
 - (void)loadClasses;
 {
-    CDSection *section = [[self.machOFile dataConstSegment] sectionWithName:@"__objc_classlist"];
-    
-    CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithSection:section];
-    while ([cursor isAtEnd] == NO) {
-        uint64_t val = [cursor readPtr];
-        CDOCClass *aClass = [self loadClassAtAddress:val];
-        if (aClass != nil) {
-            [self addClass:aClass withAddress:val];
+    {
+        CDSection *section = [[self.machOFile dataConstSegment] sectionWithName:@"__objc_classlist"];
+
+        CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithSection:section];
+        while ([cursor isAtEnd] == NO) {
+            uint64_t val = [cursor readPtr];
+            CDOCClass *aClass = [self loadClassAtAddress:val];
+            if (aClass != nil) {
+                //NSLog(@"Class: %@", aClass.name);
+                [self addClass:aClass withAddress:val];
+            }
+            else
+                NSLog(@"Failed");
+        }
+    }
+    {
+        CDSection *section = [[self.machOFile dataConstSegment] sectionWithName:@"__objc_nlclslist"];
+
+        CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithSection:section];
+        while ([cursor isAtEnd] == NO) {
+            uint64_t val = [cursor readPtr];
+            CDOCClass *aClass = [self loadClassAtAddress:val];
+            if (aClass != nil) {
+                //NSLog(@"Class: %@", aClass.name);
+                [self addClass:aClass withAddress:val];
+            }
+            else
+                NSLog(@"Failed");
         }
     }
 }
@@ -61,6 +84,7 @@
     CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithSection:section];
     while ([cursor isAtEnd] == NO) {
         CDOCCategory *category = [self loadCategoryAtAddress:[cursor readPtr]];
+        //NSLog(@"Category: %@ %@", category.name, category.classRef.className);
         [self addCategory:category];
     }
 }
@@ -413,13 +437,38 @@
         struct cd_objc2_list_header listHeader;
         
         // See getEntsize() from http://www.opensource.apple.com/source/objc4/objc4-532.2/runtime/objc-runtime-new.h
-        listHeader.entsize = [cursor readInt32] & ~(uint32_t)3;
+        listHeader.entsize = [cursor readInt32] & (~(uint32_t)3);
         listHeader.count   = [cursor readInt32];
         //NSParameterAssert(listHeader.entsize == 3 * [self.machOFile ptrSize]);
+        NSUInteger PointerSize = [self.machOFile ptrSize];
         
         for (uint32_t index = 0; index < listHeader.count; index++) {
-            
-            if (listHeader.entsize != 3 * [self.machOFile ptrSize]) {
+
+            if (listHeader.entsize & 0x80000000) {
+
+                if ((listHeader.entsize & ~0x80000000) != 3 * 4)
+                    break;
+
+                // TBD
+
+/*
+                struct cd_objc2_method objc2Method;
+                objc2Method.name  = [cursor readInt32];
+                objc2Method.types = [cursor readInt32];
+                objc2Method.imp   = [cursor readInt32];
+                NSString *name    = [self.machOFile stringAtAddress:objc2Method.name];
+                NSString *types   = [self.machOFile stringAtAddress:objc2Method.types];
+
+                if (extendedMethodTypesCursor) {
+                    uint64_t extendedMethodTypes = [extendedMethodTypesCursor readInt32];
+                    types = [self.machOFile stringAtAddress:extendedMethodTypes];
+                }
+
+                CDOCMethod *method = [[CDOCMethod alloc] initWithName:name typeString:types address:objc2Method.imp];
+                [methods addObject:method];*/
+
+                break;
+            } else if (listHeader.entsize != 3 * PointerSize) {
                 break;
             }
             
