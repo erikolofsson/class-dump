@@ -1334,7 +1334,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/opt/openssl/include;
 				INSTALL_PATH = /;
 				LIBRARY_SEARCH_PATHS = /usr/local/opt/openssl/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
@@ -1389,7 +1389,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/opt/openssl/include;
 				INSTALL_PATH = /;
 				LIBRARY_SEARCH_PATHS = /usr/local/opt/openssl/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-fdiagnostics-show-option",
